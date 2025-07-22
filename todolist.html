@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>To Do List</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Arial", sans-serif;
+        background-color: #f7f7f7;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+
+      .todo-container {
+        background-color: #fff;
+        width: 55%;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+      }
+
+      #title {
+        text-align: center;
+        color: #333;
+        font-size: 55px;
+        margin: 30px 0;
+      }
+
+      .todo-form {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 40px;
+      }
+
+      .todo-form input {
+        width: 89%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 16px;
+        outline: none;
+      }
+
+      .todo-form input:focus {
+        border-color: #4caf50;
+      }
+
+      .todo-form button {
+        width: 10%;
+        padding: 10px;
+        border: none;
+        background-color: #4caf50;
+        color: #fff;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+      }
+
+      .todo-form button:hover {
+        background-color: #45a049;
+      }
+
+      ul {
+        list-style-type: none;
+      }
+
+      li {
+        background-color: #f9f9f9;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+
+      li.completed {
+        background-color: #d3ffd3;
+        text-decoration: line-through;
+      }
+
+      .delete-btn {
+        background-color: #f44336;
+        border: none;
+        padding: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        color: #fff;
+      }
+
+      .delete-btn:hover {
+        background-color: #e53935;
+      }
+
+      .check-btn {
+        width: 15px;
+        height: 15px;
+      }
+      .done {
+        text-decoration: line-through;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="todo-container">
+      <h1 id="title">To-Do List</h1>
+      <div class="todo-form">
+        <input type="text" id="todoInput" placeholder="할 일을 입력하세요" />
+        <button onclick="addTask()">등록</button>
+      </div>
+      <ul id="todoList">
+        <li>
+          <input type="checkbox" class="check-btn" onchange="listDone(this)" />
+          <p>운동하기</p>
+          <input
+            type="button"
+            class="delete-btn"
+            value="X"
+            onclick="listDel(this)" />
+        </li>
+        <li>
+          <input type="checkbox" class="check-btn" onchange="listDone(this)" />
+          <p>공부하기</p>
+          <input
+            type="button"
+            class="delete-btn"
+            value="X"
+            onclick="listDel(this)" />
+        </li>
+        <li>
+          <input type="checkbox" class="check-btn" onchange="listDone(this)" />
+          <p>자기소개서 쓰기</p>
+          <input
+            type="button"
+            class="delete-btn"
+            value="X"
+            onclick="listDel(this)" />
+        </li>
+      </ul>
+    </div>
+    <script>
+      /** 할 일 등록 버튼 이벤트 */
+      function addTask() {
+        let inputText = document.querySelector("#todoInput").value;
+        let listGroup = document.querySelector("#todoList");
+
+        // 입력 값이 없으면 경고 메시지 표시
+        if (inputText === "") {
+          alert("할 일을 입력해주세요!");
+          return; // 입력이 비어 있으면 함수 종료
+        }
+
+        let listItem = document.createElement("li");
+        let listCheck = document.createElement("input");
+        let listP = document.createElement("p");
+        let listBtn = document.createElement("input");
+
+        listGroup.appendChild(listItem);
+
+        listItem.appendChild(listCheck);
+        listCheck.setAttribute("type", "checkbox");
+        listBtn.setAttribute("class", "check-btn");
+
+        listItem.appendChild(listP);
+        listP.innerHTML = inputText;
+
+        listItem.appendChild(listBtn);
+        listBtn.setAttribute("type", "button");
+        listBtn.setAttribute("value", "X");
+        listBtn.setAttribute("class", "delete-btn");
+
+        // 할 일 완료 처리
+        listCheck.addEventListener("change", function () {
+          listP.classList.toggle("done");
+        });
+
+        // 항목 삭제
+        listBtn.addEventListener("click", function () {
+          listItem.remove();
+        });
+
+        // 등록 후 input text 비우기
+        document.querySelector("#todoInput").value = "";
+      }
+
+      /** 할 일 삭제 버튼 이벤트 */
+      function listDel(btn) {
+        let listItem = btn.closest("li");
+
+        if (listItem) {
+          listItem.remove();
+        }
+      }
+
+      /** 할 일 등록 버튼 이벤트 */
+      function listDone(check) {
+        let listItem = check.closest("li");
+        let listP = listItem.querySelector("p");
+        if (listP) {
+          listP.classList.toggle("done");
+        }
+      }
+    </script>
+  </body>
+</html>
