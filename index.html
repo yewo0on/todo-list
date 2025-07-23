@@ -18,6 +18,7 @@
         justify-content: center;
         align-items: center;
         height: 100vh;
+        user-select: none;
       }
 
       .todo-container {
@@ -69,15 +70,12 @@
         background-color: #45a049;
       }
 
-      ul {
-        list-style-type: none;
-      }
-
       li {
+        list-style-type: none;
         background-color: #f9f9f9;
         padding: 15px;
         border-radius: 8px;
-        margin-bottom: 10px;
+        margin-bottom: 20px;
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -106,8 +104,17 @@
         width: 15px;
         height: 15px;
       }
+
       .done {
         text-decoration: line-through;
+      }
+
+      .draggable.dragover {
+        background-color: #ccc;
+      }
+
+      .dragging {
+        opacity: 0.3;
       }
     </style>
   </head>
@@ -118,18 +125,18 @@
         <input type="text" id="todoInput" placeholder="할 일을 입력하세요" />
         <button id="add-btn">등록</button>
       </div>
-      <ul id="todoList">
-        <li>
+      <ul id="todoList" class="dropzone">
+        <li class="draggable" draggable="true">
           <input type="checkbox" class="check-btn" />
           <p>운동하기</p>
           <input type="button" class="delete-btn" value="X" />
         </li>
-        <li>
+        <li class="draggable" draggable="true">
           <input type="checkbox" class="check-btn" />
           <p>공부하기</p>
           <input type="button" class="delete-btn" value="X" />
         </li>
-        <li>
+        <li class="draggable" draggable="true">
           <input type="checkbox" class="check-btn" />
           <p>자기소개서 쓰기</p>
           <input type="button" class="delete-btn" value="X" />
@@ -155,10 +162,12 @@
         let listBtn = document.createElement("input");
 
         listGroup.appendChild(listItem);
+        listItem.setAttribute("class", "draggable");
+        listItem.setAttribute("draggable", "true");
 
         listItem.appendChild(listCheck);
         listCheck.setAttribute("type", "checkbox");
-        listBtn.setAttribute("class", "check-btn");
+        listCheck.setAttribute("class", "check-btn");
 
         listItem.appendChild(listP);
         listP.innerHTML = inputText;
@@ -183,8 +192,7 @@
       }
 
       // 등록 버튼과 함수 연결
-      const addBtn = document.querySelector("#add-btn");
-      addBtn.addEventListener("click", addTask);
+      document.querySelector("#add-btn").addEventListener("click", addTask);
 
       const list = document.querySelector("#todoList");
       // 삭제 버튼 클릭 처리
@@ -203,6 +211,84 @@
           if (p) p.classList.toggle("done");
         }
       });
+
+      /** 드래그 이벤트 */
+      let dragged;
+
+      /* 드래그 가능한 대상에서 발생하는 이벤트 */
+      document.addEventListener("drag", (event) => {
+        console.log("dragging");
+      });
+
+      /* 드래그 시작 */
+      document.addEventListener("dragstart", (event) => {
+        dragged = event.target;
+        // 반투명하게 만들기
+        event.target.classList.add("dragging");
+      });
+
+      /* 드래그 끝 */
+      document.addEventListener("dragend", (event) => {
+        // 투명도 초기화
+        event.target.classList.remove("dragging");
+      });
+
+      /* 드래그 오버 중: 위치 계산 */
+      document.addEventListener("dragover", (event) => {
+        event.preventDefault();
+        const list = document.querySelector("#todoList");
+        const afterElement = getDragAfterElement(list, event.clientY);
+
+        if (afterElement == null) {
+          list.appendChild(dragged);
+        } else {
+          list.insertBefore(dragged, afterElement);
+        }
+      });
+
+      document.addEventListener("dragenter", (event) => {
+        // 드래그 가능한 요소가 대상 위로 오면 강조
+        if (event.target.classList.contains("dropzone")) {
+          event.target.classList.add("dragover");
+        }
+      });
+
+      document.addEventListener("dragleave", (event) => {
+        // 드래그 가능한 요소가 대상 밖으로 나가면 강조 제거
+        if (event.target.classList.contains("dropzone")) {
+          event.target.classList.remove("dragover");
+        }
+      });
+
+      /* 드롭 후에는 강조 제거 */
+      document.addEventListener("drop", (event) => {
+        event.preventDefault();
+        const dropzone = event.target.closest(".dropzone");
+        if (dropzone) {
+          dropzone.classList.remove("dragover");
+        }
+      });
+
+      /** 드래그 후 위치 계산 함수 */
+      function getDragAfterElement(list, y) {
+        const draggableItems = [
+          ...list.querySelectorAll(".draggable:not(.dragging)"),
+        ];
+
+        return draggableItems.reduce(
+          (closest, child) => {
+            const box = child.getBoundingClientRect();
+            const offset = y - box.top - box.height / 2;
+
+            if (offset < 0 && offset > closest.offset) {
+              return { offset: offset, element: child };
+            } else {
+              return closest;
+            }
+          },
+          { offset: Number.NEGATIVE_INFINITY }
+        ).element;
+      }
     </script>
   </body>
 </html>
