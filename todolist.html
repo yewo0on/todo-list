@@ -116,40 +116,29 @@
       <h1 id="title">To-Do List</h1>
       <div class="todo-form">
         <input type="text" id="todoInput" placeholder="할 일을 입력하세요" />
-        <button onclick="addTask()">등록</button>
+        <button id="add-btn">등록</button>
       </div>
       <ul id="todoList">
         <li>
-          <input type="checkbox" class="check-btn" onchange="listDone(this)" />
+          <input type="checkbox" class="check-btn" />
           <p>운동하기</p>
-          <input
-            type="button"
-            class="delete-btn"
-            value="X"
-            onclick="listDel(this)" />
+          <input type="button" class="delete-btn" value="X" />
         </li>
         <li>
-          <input type="checkbox" class="check-btn" onchange="listDone(this)" />
+          <input type="checkbox" class="check-btn" />
           <p>공부하기</p>
-          <input
-            type="button"
-            class="delete-btn"
-            value="X"
-            onclick="listDel(this)" />
+          <input type="button" class="delete-btn" value="X" />
         </li>
         <li>
-          <input type="checkbox" class="check-btn" onchange="listDone(this)" />
+          <input type="checkbox" class="check-btn" />
           <p>자기소개서 쓰기</p>
-          <input
-            type="button"
-            class="delete-btn"
-            value="X"
-            onclick="listDel(this)" />
+          <input type="button" class="delete-btn" value="X" />
         </li>
       </ul>
     </div>
+
     <script>
-      /** 할 일 등록 버튼 이벤트 */
+      /** 할 일 등록 함수 */
       function addTask() {
         let inputText = document.querySelector("#todoInput").value;
         let listGroup = document.querySelector("#todoList");
@@ -193,23 +182,27 @@
         document.querySelector("#todoInput").value = "";
       }
 
-      /** 할 일 삭제 버튼 이벤트 */
-      function listDel(btn) {
-        let listItem = btn.closest("li");
+      // 등록 버튼과 함수 연결
+      const addBtn = document.querySelector("#add-btn");
+      addBtn.addEventListener("click", addTask);
 
-        if (listItem) {
-          listItem.remove();
+      const list = document.querySelector("#todoList");
+      // 삭제 버튼 클릭 처리
+      list.addEventListener("click", function (e) {
+        if (e.target.classList.contains("delete-btn")) {
+          const li = e.target.closest("li");
+          if (li) li.remove();
         }
-      }
+      });
 
-      /** 할 일 등록 버튼 이벤트 */
-      function listDone(check) {
-        let listItem = check.closest("li");
-        let listP = listItem.querySelector("p");
-        if (listP) {
-          listP.classList.toggle("done");
+      // 체크박스 변경 처리 (완료 표시)
+      list.addEventListener("change", function (e) {
+        if (e.target.classList.contains("check-btn")) {
+          const li = e.target.closest("li");
+          const p = li.querySelector("p");
+          if (p) p.classList.toggle("done");
         }
-      }
+      });
     </script>
   </body>
 </html>
