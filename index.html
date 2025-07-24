@@ -99,13 +99,13 @@
         margin: 30px 0;
       }
 
-      .todo-form {
+      #todoForm {
         display: flex;
         justify-content: space-between;
         margin-bottom: 40px;
       }
 
-      .todo-form input {
+      #todoInput {
         width: 89%;
         padding: 10px;
         border: 1px solid #ddd;
@@ -114,11 +114,11 @@
         outline: none;
       }
 
-      .todo-form input:focus {
+      #todoInput:focus {
         border-color: #4caf50;
       }
 
-      .todo-form button {
+      #add-btn {
         width: 10%;
         padding: 10px;
         border: none;
@@ -129,7 +129,7 @@
         cursor: pointer;
       }
 
-      .todo-form button:hover {
+      #add-btn:hover {
         background-color: #45a049;
       }
 
@@ -194,9 +194,29 @@
       .dragging {
         opacity: 0.3;
       }
+
+      #toast {
+        padding: 15px 20px;
+        position: fixed;
+        left: 50%;
+        bottom: -100px;
+        transform: translate(-50%, -50%);
+        z-index: 999;
+        border-radius: 60px;
+        background: #ff6d6d;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.8s ease;
+      }
     </style>
   </head>
   <body>
+    <div id="toast">
+      <p class="text">❌ 할 일을 입력해주세요</p>
+    </div>
+
     <div class="cotents">
       <div class="chat-container-left">
         <div class="bubble left">할 일을 완료하였으면 체크해보세요!</div>
@@ -204,10 +224,10 @@
 
       <div class="todo-container">
         <h1 id="title">To-Do List</h1>
-        <div class="todo-form">
+        <form id="todoForm">
           <input type="text" id="todoInput" placeholder="할 일을 입력하세요" />
-          <button id="add-btn">+</button>
-        </div>
+          <button type="submit" id="add-btn">+</button>
+        </form>
         <ul id="todoList" class="dropzone">
           <li class="draggable" draggable="true">
             <input type="checkbox" class="check-btn" />
@@ -235,15 +255,28 @@
       </div>
     </div>
     <script>
+      /** 토스트 보이기 함수 */
+      function showToast() {
+        const toast = document.querySelector("#toast");
+        toast.style.bottom = "0";
+
+        setTimeout(() => {
+          toast.style.bottom = "-100px";
+        }, 2000);
+      }
+
       /** 할 일 등록 함수 */
       function addTask() {
-        let inputText = document.querySelector("#todoInput").value;
+        const todoInput = document.getElementById("todoInput");
+        let inputText = todoInput.value.trim();
         let listGroup = document.querySelector("#todoList");
 
         // 입력 값이 없으면 경고 메시지 표시
         if (inputText === "") {
-          alert("할 일을 입력해주세요!");
-          return; // 입력이 비어 있으면 함수 종료
+          showToast();
+          return;
+        } else {
+          todoInput.value = ""; // 입력 필드 비우기
         }
 
         let listItem = document.createElement("li");
@@ -272,7 +305,10 @@
       }
 
       // 등록 버튼과 함수 연결
-      document.querySelector("#add-btn").addEventListener("click", addTask);
+      document.querySelector("#todoForm").addEventListener("submit", (e) => {
+        e.preventDefault();
+        addTask();
+      });
 
       // 리셋 버튼 클릭 처리
       const resetBtn = document.querySelector("#reset-btn");
